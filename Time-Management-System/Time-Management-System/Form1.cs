@@ -27,23 +27,23 @@ namespace Time_Management_System
 
             if (this.WindowState == FormWindowState.Minimized)
             {
-                notifyIcon.Visible = true;
-                notifyIcon.ShowBalloonTip(500);
-                this.Hide();
-
+                notifyIcon.Visible = true; // make the system-tray icon to be visible
+                notifyIcon.ShowBalloonTip(100); // timeout time of the notification
+                this.Hide(); // hide the Main Window
             }
-        }
-
-        private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            Show();
-            this.WindowState = FormWindowState.Normal;
-            notifyIcon.Visible = false;
         }
 
         private void frm_mainWindow_Load(object sender, EventArgs e)
         {
-            notifyIcon.Icon = SystemIcons.Information;
+            notifyIcon.Icon = SystemIcons.Application; // set the icon to default application icon
+        }
+
+        private void notifyIcon_MouseClick(object sender, MouseEventArgs e)
+        {
+            this.Show(); // show the Main Window
+            notifyIcon.Visible = false; // hide the system tray icon
+            this.WindowState = FormWindowState.Normal; // resize the Main Windows
+
         }
     }
 }
