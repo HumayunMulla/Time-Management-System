@@ -6,4 +6,4 @@ You'll need the following softwares installed -
   1. DOT.NET Framework 4.5
   2. Visual Studio 2019
   3. Registered account on https://remotemysql.com/
-   a. T-SQL scripts used in this project are present in SQL folder.
+  4. T-SQL scripts used in this project are present in SQL folder.
