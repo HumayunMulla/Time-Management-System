@@ -38,6 +38,8 @@ namespace Time_Management_System
         {
             notifyIcon.Icon = SystemIcons.Application; // set the icon to default application icon
             txtBox_sunyid.MaxLength = 6; // set the default length of txtBox_sunyid limited to only 6 INT values
+            ConnectionClass connectObject = new ConnectionClass(); // create instance of connection class
+            connectObject.ConnectionOpen();
         }
 
         private void notifyIcon_MouseClick(object sender, MouseEventArgs e)
