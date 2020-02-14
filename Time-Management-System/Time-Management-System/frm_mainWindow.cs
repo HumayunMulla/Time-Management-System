@@ -1,39 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Globalization;
 using MySql.Data.MySqlClient;
 using System.Net.NetworkInformation;
 using System.Net;
 using System.Net.Sockets;
+using Outlook = Microsoft.Office.Interop.Outlook;
+using System.Configuration;
 
 namespace Time_Management_System
 {
     public partial class frm_mainWindow : Form
     {
         ConnectionClass connectObject = new ConnectionClass(); // create instance of connection class
-        public frm_mainWindow()
-        {
-            InitializeComponent();
-
-        }
-
-
         public String SunyID { get; set; }
         public String sql { get; set; }
 
         public String employee_name { get; set; }
+        public String strFROMMAIL { get; set; }
+        public String strTOMAIL { get; set; }
 
         // variables used for data & time recording
         public String strDateTime { get; set; }
         DateTime localDate = DateTime.Now;
         DateTime utcDate = DateTime.UtcNow;
+        DateTime currentDate;
 
         // user system's variables used for recording details
         public String checkin_time { get; set; }
@@ -45,7 +37,25 @@ namespace Time_Management_System
         public String IP_Address { get; set; }
         public String domain_name { get; set; }
         public String user_name { get; set; }
+        string providerName = "";
 
+        public frm_mainWindow(string IniPath = null)
+        {
+            InitializeComponent();
+
+            providerName = ConfigurationManager.AppSettings["providerName"].ToString();
+            var MyIni = new IniFile("configuration.ini");
+            var TOMAIL = IniFile.Read("TOMAIL", "MAIL");
+            var FROMMAIL = IniFile.Read("FROMMAIL", "MAIL");
+            strFROMMAIL = FROMMAIL.ToString();
+            strTOMAIL = TOMAIL.ToString();
+
+        }
+
+
+        
+
+        
         
 
 
@@ -71,6 +81,7 @@ namespace Time_Management_System
             txtBox_sunyid.MaxLength = 6; // set the default length of txtBox_sunyid limited to only 6 INT values
             connectObject.ConnectionOpen();
             var culture = new CultureInfo("en-US"); // specific to English(United States)
+            currentDate = localDate;
             strDateTime = "     Local date and time: " + localDate.ToString(culture) + " " + localDate.Kind;
             lbl_systime.Text = strDateTime; // display current system date and time according to the local setting
             connectObject.ConnectionClose(); // close connection as it will be open when required.
@@ -167,21 +178,39 @@ namespace Time_Management_System
             try
             {
                 checkin_time = localDate.ToString(culture); // considering current system date and time
-                status = "Checkin";
+                status = "CHECKIN-SUCCESS";
                 sql = "insert into " + ConnectionClass.database + ".employee_details values (" + SunyID.ToString() + ",'" + checkin_time + "','','" + status + "','" + user_name + "','" + hostname + "','" + MAC_Address + "','" + IP_Address + "','" + domain_name + "','DXADMIN',now())";
                 connectObject.ExecuteCommand(sql);
-                MessageBox.Show("Check-IN time recorded for user - "+employee_name, "Time Management System");
+
                 btn_checkin.Enabled = false;
                 btn_checkin.ForeColor = System.Drawing.Color.Black;
                 btn_checkout.Enabled = true;
                 btn_checkout.ForeColor = System.Drawing.Color.Red;
                 lbl_status.Text = "Ready";
                 lbl_status.ForeColor = System.Drawing.Color.Black;
+                CreateMailItem("CHECK-IN");
+
+                MessageBox.Show("Check-IN time recorded for user - " + employee_name, "Time Management System");
+
             }
             catch (MySqlException ex)
             {
                 MessageBox.Show("Error in Checking Functionality - " + ex.ToString(), "Time Management System");
             }
+        }
+
+        private void CreateMailItem(String Subject)
+        {
+            Microsoft.Office.Interop.Outlook.Application app = new Microsoft.Office.Interop.Outlook.Application();
+            Microsoft.Office.Interop.Outlook.MailItem mailItem = app.CreateItem(Microsoft.Office.Interop.Outlook.OlItemType.olMailItem);
+
+            mailItem.Subject = Subject +" " + currentDate.ToString("dd MMMM yyyy") + " - " + currentDate.ToString("hh:mm:ss tt");
+            mailItem.To = strTOMAIL;
+            mailItem.Body = "Hi\n\nPlease find my today's "+ Subject + " " + currentDate.ToString("dd MMMM yyyy") + " - " + currentDate.ToString("hh:mm:ss tt") + "." + "\n\nSystem Details:\nUser Name: "+user_name+"\nHOSTNAME: "+hostname+"\nIP Address:"+IP_Address+"\nMAC Address: "+MAC_Address+"\nDOMAIN: "+domain_name+"\n\nThis is autogenerated email sent by Time Management System.\n\nThanks & Regards\n"+user_name;
+            //mailItem.Attachments.Add(attachment_path); //attachment_path is a string holding path of the attachment
+            mailItem.Importance = Outlook.OlImportance.olImportanceHigh;
+            mailItem.Display(false);
+            mailItem.Send();
         }
 
     }
