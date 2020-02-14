@@ -6,4 +6,5 @@ You'll need the following softwares installed -
   1. .NET Framework 4.5
   2. Visual Studio 2019
   3. Registered account on https://remotemysql.com/
-  4. T-SQL scripts used in this project are present in SQL folder.
+  4. T-SQL scripts used in this project are present in SQL folder.  
+  5. MySQL Data Connector: https://dev.mysql.com/downloads/connector/net/
