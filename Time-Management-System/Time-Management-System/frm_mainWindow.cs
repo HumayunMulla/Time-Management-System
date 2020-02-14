@@ -7,16 +7,47 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Globalization;
+using MySql.Data.MySqlClient;
+using System.Net.NetworkInformation;
+using System.Net;
+using System.Net.Sockets;
 
 namespace Time_Management_System
 {
     public partial class frm_mainWindow : Form
     {
+        ConnectionClass connectObject = new ConnectionClass(); // create instance of connection class
         public frm_mainWindow()
         {
             InitializeComponent();
+
         }
+
+
         public String SunyID { get; set; }
+        public String sql { get; set; }
+
+        public String employee_name { get; set; }
+
+        // variables used for data & time recording
+        public String strDateTime { get; set; }
+        DateTime localDate = DateTime.Now;
+        DateTime utcDate = DateTime.UtcNow;
+
+        // user system's variables used for recording details
+        public String checkin_time { get; set; }
+        public String checkout_time { get; set; }
+        public String status { get; set; }
+        public String system_time { get; set; }
+        public String hostname { get; set; }
+        public String MAC_Address { get; set; }
+        public String IP_Address { get; set; }
+        public String domain_name { get; set; }
+        public String user_name { get; set; }
+
+        
+
 
         private void frm_mainWindow_Resize(object sender, EventArgs e)
         {
@@ -38,8 +69,31 @@ namespace Time_Management_System
         {
             notifyIcon.Icon = SystemIcons.Application; // set the icon to default application icon
             txtBox_sunyid.MaxLength = 6; // set the default length of txtBox_sunyid limited to only 6 INT values
-            ConnectionClass connectObject = new ConnectionClass(); // create instance of connection class
             connectObject.ConnectionOpen();
+            var culture = new CultureInfo("en-US"); // specific to English(United States)
+            strDateTime = "     Local date and time: " + localDate.ToString(culture) + " " + localDate.Kind;
+            lbl_systime.Text = strDateTime; // display current system date and time according to the local setting
+            connectObject.ConnectionClose(); // close connection as it will be open when required.
+            // initializing system variables on form load only
+            user_name = System.Environment.UserName;
+            hostname = System.Net.Dns.GetHostName();
+            foreach (NetworkInterface n in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                if (n.OperationalStatus == OperationalStatus.Up)
+                {
+                    MAC_Address += n.GetPhysicalAddress().ToString();
+                    break;
+                }
+            }
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    IP_Address += ip.ToString();
+                }
+            }
+            domain_name = System.Environment.UserDomainName;
         }
 
         private void notifyIcon_MouseClick(object sender, MouseEventArgs e)
@@ -55,17 +109,80 @@ namespace Time_Management_System
              *  being entered. If any character is entered it will give a 
              *  pop-up message. Also check if any special keys are pressed.
              */
-            
+
+
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
             {
                 e.Handled = true;
                 MessageBox.Show("Please enter INT value only!", "Time Management System");
             }
-            else
+
+        }
+
+        private void txtBox_sunyid_KeyDown(object sender, KeyEventArgs e)
+        {
+
+            connectObject.ConnectionOpen();
+            if (e.KeyData == Keys.Enter)
             {
+                int result = 0; // local scope for only use in this param only
                 SunyID = txtBox_sunyid.Text; // assign textbox value to string variable
-                
+                try
+                {
+                    // validation process to check if the employee is a SUNY employee with valid SUNY ID
+                    sql = "SELECT COUNT(*) FROM employeeID WHERE employeeid = " + SunyID.ToString();
+                    result = Convert.ToInt32(connectObject.ExecuteScalar(sql));
+                    if (result > 0)
+                    {
+                        sql = "SELECT employee_name FROM employeeID WHERE employeeid = " + SunyID.ToString();
+                        employee_name = connectObject.ExecuteScalar(sql);
+
+                        lbl_status.Text = "Valid Employee";
+                        lbl_status.ForeColor = System.Drawing.Color.Green;
+                        btn_checkin.Enabled = true;
+                        btn_checkin.ForeColor = System.Drawing.Color.Red;
+                    }
+                    else if (result == 0)
+                    {
+                        MessageBox.Show("Please enter valid SUNY ID", "Time Management System");
+                    }
+                }
+                catch (MySqlException ex)
+                {
+                    MessageBox.Show("Error in Authentication - " + ex.ToString(), "Time Management System");
+                }
+
+            }
+            connectObject.ConnectionClose(); // Calls close connection method to close the connection made to the database
+        }
+
+        private void btn_checkin_Click(object sender, EventArgs e)
+        {
+            /*   This method will record check-in time into database along with 
+             *   other attributes such as hostname, ip_address, etc. That is user details 
+             *   related to the machine he is using the application.
+             */
+            var culture = new CultureInfo("en-US"); // specific to English(United States)
+            connectObject.ConnectionOpen(); // create connection with the database again for inserting 
+            try
+            {
+                checkin_time = localDate.ToString(culture); // considering current system date and time
+                status = "Checkin";
+                sql = "insert into " + ConnectionClass.database + ".employee_details values (" + SunyID.ToString() + ",'" + checkin_time + "','','" + status + "','" + user_name + "','" + hostname + "','" + MAC_Address + "','" + IP_Address + "','" + domain_name + "','DXADMIN',now())";
+                connectObject.ExecuteCommand(sql);
+                MessageBox.Show("Check-IN time recorded for user - "+employee_name, "Time Management System");
+                btn_checkin.Enabled = false;
+                btn_checkin.ForeColor = System.Drawing.Color.Black;
+                btn_checkout.Enabled = true;
+                btn_checkout.ForeColor = System.Drawing.Color.Red;
+                lbl_status.Text = "Ready";
+                lbl_status.ForeColor = System.Drawing.Color.Black;
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show("Error in Checking Functionality - " + ex.ToString(), "Time Management System");
             }
         }
+
     }
 }

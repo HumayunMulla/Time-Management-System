@@ -22,8 +22,6 @@ namespace Time_Management_System
         public ConnectionClass(string IniPath = null)
         {
             providerName = ConfigurationManager.AppSettings["providerName"].ToString();
-            //UserID = ConfigurationManager.AppSettings["UserID"].ToString();
-            //password = ConfigurationManager.AppSettings["Password"].ToString();
             var MyIni = new IniFile("configuration.ini");
             var DATABASE = IniFile.Read("DATABASE", "SERVER");
             var HOSTNAME = IniFile.Read("HOSTNAME", "SERVER");
