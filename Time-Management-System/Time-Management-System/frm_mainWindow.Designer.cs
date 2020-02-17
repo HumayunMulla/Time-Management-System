@@ -31,6 +31,10 @@
             this.components = new System.ComponentModel.Container();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPage1_attendance = new System.Windows.Forms.TabPage();
+            this.btn_checkout = new System.Windows.Forms.Button();
+            this.btn_checkin = new System.Windows.Forms.Button();
+            this.grpBox_systime = new System.Windows.Forms.GroupBox();
+            this.lbl_systime = new System.Windows.Forms.Label();
             this.txtBox_sunyid = new System.Windows.Forms.TextBox();
             this.lbl_sunyid = new System.Windows.Forms.Label();
             this.tabPage2_tasklogger = new System.Windows.Forms.TabPage();
@@ -38,14 +42,10 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.lbl_status = new System.Windows.Forms.Label();
-            this.grpBox_systime = new System.Windows.Forms.GroupBox();
-            this.lbl_systime = new System.Windows.Forms.Label();
-            this.btn_checkin = new System.Windows.Forms.Button();
-            this.btn_checkout = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabPage1_attendance.SuspendLayout();
-            this.panel1.SuspendLayout();
             this.grpBox_systime.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl
@@ -76,6 +76,47 @@
             this.tabPage1_attendance.TabIndex = 0;
             this.tabPage1_attendance.Text = "Attendance";
             this.tabPage1_attendance.UseVisualStyleBackColor = true;
+            // 
+            // btn_checkout
+            // 
+            this.btn_checkout.Enabled = false;
+            this.btn_checkout.Location = new System.Drawing.Point(340, 140);
+            this.btn_checkout.Name = "btn_checkout";
+            this.btn_checkout.Size = new System.Drawing.Size(112, 39);
+            this.btn_checkout.TabIndex = 4;
+            this.btn_checkout.Text = "CHECK-OUT";
+            this.btn_checkout.UseVisualStyleBackColor = true;
+            this.btn_checkout.Click += new System.EventHandler(this.btn_checkout_Click);
+            // 
+            // btn_checkin
+            // 
+            this.btn_checkin.Enabled = false;
+            this.btn_checkin.Location = new System.Drawing.Point(26, 140);
+            this.btn_checkin.Name = "btn_checkin";
+            this.btn_checkin.Size = new System.Drawing.Size(112, 39);
+            this.btn_checkin.TabIndex = 3;
+            this.btn_checkin.Text = "CHECK-IN";
+            this.btn_checkin.UseVisualStyleBackColor = true;
+            this.btn_checkin.Click += new System.EventHandler(this.btn_checkin_Click);
+            // 
+            // grpBox_systime
+            // 
+            this.grpBox_systime.Controls.Add(this.lbl_systime);
+            this.grpBox_systime.Location = new System.Drawing.Point(26, 53);
+            this.grpBox_systime.Name = "grpBox_systime";
+            this.grpBox_systime.Size = new System.Drawing.Size(426, 78);
+            this.grpBox_systime.TabIndex = 2;
+            this.grpBox_systime.TabStop = false;
+            this.grpBox_systime.Text = "System Time";
+            // 
+            // lbl_systime
+            // 
+            this.lbl_systime.AutoSize = true;
+            this.lbl_systime.Font = new System.Drawing.Font("Microsoft Tai Le", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_systime.Location = new System.Drawing.Point(18, 34);
+            this.lbl_systime.Name = "lbl_systime";
+            this.lbl_systime.Size = new System.Drawing.Size(0, 23);
+            this.lbl_systime.TabIndex = 0;
             // 
             // txtBox_sunyid
             // 
@@ -139,46 +180,6 @@
             this.lbl_status.TabIndex = 0;
             this.lbl_status.Text = "Ready";
             // 
-            // grpBox_systime
-            // 
-            this.grpBox_systime.Controls.Add(this.lbl_systime);
-            this.grpBox_systime.Location = new System.Drawing.Point(26, 53);
-            this.grpBox_systime.Name = "grpBox_systime";
-            this.grpBox_systime.Size = new System.Drawing.Size(426, 78);
-            this.grpBox_systime.TabIndex = 2;
-            this.grpBox_systime.TabStop = false;
-            this.grpBox_systime.Text = "System Time";
-            // 
-            // lbl_systime
-            // 
-            this.lbl_systime.AutoSize = true;
-            this.lbl_systime.Font = new System.Drawing.Font("Microsoft Tai Le", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_systime.Location = new System.Drawing.Point(18, 34);
-            this.lbl_systime.Name = "lbl_systime";
-            this.lbl_systime.Size = new System.Drawing.Size(0, 23);
-            this.lbl_systime.TabIndex = 0;
-            // 
-            // btn_checkin
-            // 
-            this.btn_checkin.Enabled = false;
-            this.btn_checkin.Location = new System.Drawing.Point(26, 140);
-            this.btn_checkin.Name = "btn_checkin";
-            this.btn_checkin.Size = new System.Drawing.Size(112, 39);
-            this.btn_checkin.TabIndex = 3;
-            this.btn_checkin.Text = "CHECK-IN";
-            this.btn_checkin.UseVisualStyleBackColor = true;
-            this.btn_checkin.Click += new System.EventHandler(this.btn_checkin_Click);
-            // 
-            // btn_checkout
-            // 
-            this.btn_checkout.Enabled = false;
-            this.btn_checkout.Location = new System.Drawing.Point(340, 140);
-            this.btn_checkout.Name = "btn_checkout";
-            this.btn_checkout.Size = new System.Drawing.Size(112, 39);
-            this.btn_checkout.TabIndex = 4;
-            this.btn_checkout.Text = "CHECK-OUT";
-            this.btn_checkout.UseVisualStyleBackColor = true;
-            // 
             // frm_mainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
@@ -198,10 +199,10 @@
             this.tabControl.ResumeLayout(false);
             this.tabPage1_attendance.ResumeLayout(false);
             this.tabPage1_attendance.PerformLayout();
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             this.grpBox_systime.ResumeLayout(false);
             this.grpBox_systime.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
